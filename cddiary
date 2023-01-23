@@ -1,0 +1,94 @@
+from replit import db
+import os, time, datetime, random
+
+
+def add():
+  tweet = input("✨:\n")
+  timestamp = datetime.datetime.now()
+  key = f"date{timestamp}"
+  db[key] = tweet
+  time.sleep(2)
+  os.system("clear")
+
+def view():
+  keys = db.keys()
+  matches = db.prefix("date")
+  matches = matches[::-1]
+  counter = 0
+  for i in matches:
+    print(db[i])
+    print()
+    time.sleep(0.5)
+    counter+=1
+    if(counter%1==0):
+      keep = input("Would you like to see the next?:(y/n)\n ")
+      if(keep.lower() =="n"):
+        break
+  time.sleep(1)
+  os.system("clear")
+
+def login():
+  userName = input("Login > ")
+  password = input("Password > ")
+  keys = db.keys()
+  if userName not in keys:
+    print("ERROR: User doesn't exists")
+    return
+  salt = db[userName]["salt"]
+  newPassword = f"{password}{salt}"
+  newPassword = hash(newPassword)
+
+  if db[userName]["password"]==newPassword:
+    print("Login Successful")
+    return True
+  else:
+    print("Invalid login")
+
+def createID():
+  userName = input("Input the login for your ID > ")
+  password = input("Input the password for your ID > ")
+  keys = db.keys()
+  if userName in keys:
+    print("ERROR: User alredy exists")
+    return
+  salt = random.randint(100000, 999999)
+  newPassword =  f"{password}{salt}"
+  newPassword = hash(newPassword)
+  db[userName] = {"password":newPassword, "salt": salt} 
+
+while True:
+  print("ID CHECK SYSTEM: ")
+  print("-----------------")
+  print()
+  menu1 = input("1: ID register\n2: Login System\n> ")
+  if menu1 == "1":
+    time.sleep(2)
+    os.system("clear")
+    createID()
+  elif menu1 =="2":
+    time.sleep(2)
+    os.system("clear")
+    login()
+    if login() == True:
+      time.sleep(2)
+      os.system("clear")
+      print("Welcome to NonTweeter")
+      print()
+      menu = input("1: Add\n2: View Tweets\n3: Exit\n>")
+      if menu =="1":
+        add()
+        time.sleep(2)
+        os.system("clear")
+      elif menu =="2":
+        time.sleep(2)
+        os.system("clear")        
+        view()
+      else:
+        exit()
+  else:
+    exit()
+    #keys = db.keys()
+    #for key in keys:
+      #print(db["admin"])
+time.sleep(1)    
+os.system("clear")
